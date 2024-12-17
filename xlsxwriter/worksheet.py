@@ -2048,7 +2048,7 @@ class Worksheet(xmlwriter.XMLwriter):
 
         return self.set_column(first_col, last_col, width, cell_format, options)
 
-    def autofit(self):
+    def autofit(self, max_width = 255):
         """
         Simulate autofit based on the data, and datatypes in each column.
 
@@ -2067,6 +2067,10 @@ class Worksheet(xmlwriter.XMLwriter):
         # No data written to the target sheet; nothing to autofit
         if self.dim_rowmax is None:
             return
+        
+        if max_width > 255.0:
+            warn("The maximum width of a column is 255 and has thus been automatically choosen instead of " + max_width)
+            max_width = 255.0
 
         # Store the max pixel width for each column.
         col_width_max = {}
@@ -2172,7 +2176,7 @@ class Worksheet(xmlwriter.XMLwriter):
             width = self._pixels_to_width(pixel_width + 7)
 
             # The max column character width in Excel is 255.
-            width = min(width, 255.0)
+            width = min(width, max_width)
 
             # Add the width to an existing col info structure or add a new one.
             if self.col_info.get(col_num):
